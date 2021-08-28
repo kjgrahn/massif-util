@@ -1,4 +1,5 @@
 example
+parse
 tests
 test.cc
 *.o

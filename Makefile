@@ -5,12 +5,13 @@
 
 SHELL=/bin/bash
 INSTALLBASE=/usr/local
-CXXFLAGS=-Wall -Wextra -pedantic -std=c++11 -g -Os -Wold-style-cast
+CXXFLAGS=-Wall -Wextra -pedantic -std=c++14 -g -Os -Wold-style-cast
 CPPFLAGS=
 ARFLAGS=rTP
 
 .PHONY: all
 all: example
+all: parse
 all: tests
 
 .PHONY: check checkv
@@ -21,7 +22,7 @@ checkv: tests
 
 .PHONY: clean
 clean:
-	$(RM) example
+	$(RM) example parse
 	$(RM) tests test.cc
 	$(RM) *.[oa] test/*.o
 	$(RM) -r dep
@@ -34,6 +35,9 @@ example.o: CXXFLAGS+=-O0
 
 example: example.o
 	$(CXX) -o $@ example.o
+
+parse: parse.o libmassif.a
+	$(CXX) -o $@ parse.o -L . -lmassif
 
 libtest.a: test/split.o
 libtest.a: test/snapshot.o
