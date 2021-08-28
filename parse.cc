@@ -2,10 +2,12 @@
  * All rights reserved.
  *
  */
+#include "snapshot.h"
 #include "split.h"
 
 #include <iostream>
 #include <algorithm>
+#include <memory>
 
 namespace {
 
@@ -18,19 +20,26 @@ namespace {
 	explicit Machine(std::ostream& os) : os{os} {}
 	void start_snapshot(const std::string& time);
 	void add(const std::string& s);
-	void end_snapshot() {}
+	void end_snapshot();
 
 	std::ostream& os;
+	std::unique_ptr<Snapshot> now;
     };
 
     void Machine::start_snapshot(const std::string& time)
     {
-	os << time << '\n';
+	now = std::make_unique<Snapshot>(time);
     }
 
     void Machine::add(const std::string& s)
     {
+	now->add(s);
 	os << s << '\n';
+    }
+
+    void Machine::end_snapshot()
+    {
+	now->put(os);
     }
 
     bool starts_with(const std::string& haystack,

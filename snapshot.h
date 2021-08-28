@@ -9,6 +9,7 @@
 
 #include <string>
 #include <vector>
+#include <iosfwd>
 
 /**
  * A detailed valgrind --tool=massif snapshot, which is a set of call
@@ -21,15 +22,18 @@ public:
     explicit Snapshot(const std::string& time);
     void add(const std::string& s);
 
+    void put(std::ostream& os) const;
+
 private:
     const std::string time;
     std::vector<std::string> stack;
 
-    struct Line {
-	unsigned level;
-	unsigned size;
-	std::string addr;
+    struct Entry {
+	Entry(std::string size, std::string path) : size{size}, path{path} {}
+	std::string size;
+	std::string path;
     };
+    std::vector<Entry> ee;
 };
 
 inline
