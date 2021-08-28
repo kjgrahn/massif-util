@@ -1,4 +1,6 @@
 example
+tests
+test.cc
 *.o
 *.a
 dep/
