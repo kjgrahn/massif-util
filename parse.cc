@@ -34,7 +34,6 @@ namespace {
     void Machine::add(const std::string& s)
     {
 	now->add(s);
-	os << s << '\n';
     }
 
     void Machine::end_snapshot()

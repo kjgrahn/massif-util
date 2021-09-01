@@ -69,8 +69,7 @@ void Snapshot::add(const std::string& s)
 
 void Snapshot::put(std::ostream& os) const
 {
-    os << time << '\n';
     for (const auto& e : ee) {
-	os << e.size << ' ' << e.path << '\n';
+	os << time << ' ' << e.size << ' ' << e.path << '\n';
     }
 }
