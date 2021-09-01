@@ -11,7 +11,7 @@ ARFLAGS=rTP
 
 .PHONY: all
 all: example
-all: parse
+all: massif_parse
 all: tests
 
 .PHONY: check checkv
@@ -22,7 +22,7 @@ checkv: tests
 
 .PHONY: clean
 clean:
-	$(RM) example parse
+	$(RM) example massif_parse
 	$(RM) tests test.cc
 	$(RM) *.[oa] test/*.o
 	$(RM) -r dep
@@ -36,7 +36,7 @@ example.o: CXXFLAGS+=-O0
 example: example.o
 	$(CXX) -o $@ example.o
 
-parse: parse.o libmassif.a
+massif_parse: parse.o libmassif.a
 	$(CXX) -o $@ parse.o -L . -lmassif
 
 libtest.a: test/split.o

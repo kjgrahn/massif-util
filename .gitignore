@@ -1,5 +1,5 @@
 example
-parse
+massif_parse
 tests
 test.cc
 *.o
