@@ -1,0 +1,116 @@
+.ss 12 0
+.de BP
+.IP \\fB\\$*
+..
+.
+.TH massif_parse 1 "SEP 2021" "Massif-util" "User Manuals"
+.
+.SH "NAME"
+.
+massif_parse \- parse valgrind --tool=massif output
+.
+.SH "SYNOPSIS"
+.
+.B massif_parse
+.RB [ \-d
+.IR depth ]
+.RB [ \-a
+.IR address ]
+\&...
+.I file
+\&...
+.br
+.B massif_parse
+.B --shallow
+.I file
+\&...
+.br
+.B massif_parse
+.B --graph
+.I file
+\&...
+.br
+.B massif_parse
+.B --help
+.br
+.B massif_parse
+.B --version
+.
+.SH "DESCRIPTION"
+.
+In its main mode,
+.B massif_parse
+flattens the detailed snapshots and output them as columnar data, which is
+easy to grep and/or feed to
+.BR gnuplot (1).
+Each complete call chain is assigned a name which is a
+.IR path ,
+formed by the addresses involved. The \(lqheap allocation functions\(rq are named
+.BR 0 ,
+and the \(lqlow massif's threshold\(rq entries are called
+.BR bits .
+.PP
+The columns are
+.BR time ,
+.BR size ,
+.B checksum
+and
+.BR path .
+The checksum is simply an MD5 checksum of the path; it's useful if you want to
+bisect the data using
+.BR grep (1)
+or similar, for example to find a memory leak by examining the call chains
+subset by subset.
+.
+.PP
+.B massif_parse
+.B --shallow
+ignores the detailed snapshots and just puts three pieces of data
+in three columns:
+.BR time ,
+.B mem_heap_B
+and
+.BR mem_heap_extra_B .
+This makes it easy to feed it to
+.BR gnuplot (1).
+.
+.PP
+.B massif_parse
+.B --graph
+translates the call stacks to a
+.BR graphviz (7)
+directed graph, which can be rendered to a PDF or similar using
+.BR dot (1).
+The addresses become the node names.
+Not the function names, since these would be far too long in many cases,
+especially if you're analysing a C++ program.
+.
+.SH "OPTIONS"
+.
+.BP --shallow,\ --graph
+Select the corresponding mode.
+.
+.BP \-d\ \fIdepth
+Merge the call stacks which share the
+.I depth
+lowest entries. This makes the output more manageable, but also more blunt.
+.
+.BP \-a\ \fIaddress
+Ignore call stacks which do not involve
+.IR address .
+Using this option twice includes
+.I more
+call stacks, not fewer: it means \(lqthis function or that function\(rq.
+.
+.
+.SH "AUTHOR"
+J\(:orgen Grahn \[fo]grahn+src@snipabacken.se\[fc].
+.
+.SH "LICENSE"
+The GNU General Public License (GPL) version 2 or (at your option) version 3.
+.
+.SH "SEE ALSO"
+.BR valgrind (1),
+.BR ms_print (1),
+.BR gnuplot (1),
+.BR graphviz (7).
