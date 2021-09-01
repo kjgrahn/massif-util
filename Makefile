@@ -29,6 +29,7 @@ clean:
 
 libmassif.a: snapshot.o
 libmassif.a: split.o
+libmassif.a: files...o
 	$(AR) $(ARFLAGS) $@ $^
 
 example.o: CXXFLAGS+=-O0
@@ -41,6 +42,7 @@ massif_parse: parse.o libmassif.a
 
 libtest.a: test/split.o
 libtest.a: test/snapshot.o
+libtest.a: test/files.o
 	$(AR) $(ARFLAGS) $@ $^
 
 test/%.o: CPPFLAGS+=-I.
