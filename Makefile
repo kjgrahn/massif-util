@@ -57,7 +57,7 @@ tests: test.o libmassif.a libtest.a
 .PHONY: tags TAGS
 tags: TAGS
 TAGS:
-	etags *.cc *.h
+	ctags --exclude='test' -eR . --extra=q
 
 love:
 	@echo "not war?"
