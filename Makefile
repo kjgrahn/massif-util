@@ -28,6 +28,7 @@ clean:
 	$(RM) -r dep
 
 libmassif.a: snapshot.o
+libmassif.a: graph.o
 libmassif.a: split.o
 libmassif.a: files...o
 libmassif.a: rjust.o
