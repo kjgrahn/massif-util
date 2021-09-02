@@ -58,7 +58,7 @@ void Snapshot::add(const std::string& s)
     auto addr = v[2];
     const unsigned level = indent(s);
     if (!starts_with(nn, "n")) return;
-    if (contains(v[3], "below massif's threshold")) return;
+    if (contains(v[3], "below massif's threshold")) addr = "bits";
 
     stack.resize(level);
     stack.push_back(cleanup(addr));
