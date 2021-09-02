@@ -6,6 +6,7 @@
 SHELL=/bin/bash
 INSTALLBASE=/usr/local
 CXXFLAGS=-Wall -Wextra -pedantic -std=c++14 -g -Os -Wold-style-cast
+CFLAGS=-W -Wall -pedantic -std=c99 -g -Os
 CPPFLAGS=
 ARFLAGS=rTP
 
@@ -32,6 +33,8 @@ libmassif.a: graph.o
 libmassif.a: split.o
 libmassif.a: files...o
 libmassif.a: rjust.o
+libmassif.a: md5pp.o
+libmassif.a: md5.o
 	$(AR) $(ARFLAGS) $@ $^
 
 example.o: CXXFLAGS+=-O0
@@ -66,9 +69,14 @@ love:
 $(shell mkdir -p dep/{,test})
 DEPFLAGS=-MT $@ -MMD -MP -MF dep/$*.Td
 COMPILE.cc=$(CXX) $(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
+COMPILE.c=$(CC) $(DEPFLAGS) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
 
 %.o: %.cc
 	$(COMPILE.cc) $(OUTPUT_OPTION) $<
+	@mv dep/$*.{Td,d}
+
+%.o: %.c
+	$(COMPILE.c) $(OUTPUT_OPTION) $<
 	@mv dep/$*.{Td,d}
 
 dep/%.d: ;
