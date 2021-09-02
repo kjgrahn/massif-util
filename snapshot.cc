@@ -7,6 +7,7 @@
 #include "split.h"
 #include "graph.h"
 #include "md5pp.h"
+#include "rjust.h"
 
 #include <algorithm>
 #include <iostream>
@@ -77,8 +78,8 @@ void Snapshot::add(const std::string& s)
 void Snapshot::put(std::ostream& os) const
 {
     for (const auto& e : ee) {
-	os << time << ' '
-	   << e.size << ' '
+	os << rjust(12, time) << ' '
+	   << rjust(9, e.size) << ' '
 	   << md5sum(e.path) << ' '
 	   << e.path << '\n';
     }
