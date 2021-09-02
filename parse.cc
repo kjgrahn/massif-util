@@ -3,6 +3,7 @@
  *
  */
 #include "snapshot.h"
+#include "graph.h"
 #include "files...h"
 #include "rjust.h"
 #include "split.h"
@@ -21,27 +22,31 @@ namespace {
      * matching start/end_snapshot, and not starting unless she's going
      * to add().
      */
+    template <class T>
     struct Machine {
-	explicit Machine(std::ostream& os) : os{os} {}
+	explicit Machine(T& os) : os{os} {}
 	void start_snapshot(const std::string& time);
 	void add(const std::string& s);
 	void end_snapshot();
 
-	std::ostream& os;
+	T& os;
 	std::unique_ptr<Snapshot> now;
     };
 
-    void Machine::start_snapshot(const std::string& time)
+    template <class T>
+    void Machine<T>::start_snapshot(const std::string& time)
     {
 	now = std::make_unique<Snapshot>(time);
     }
 
-    void Machine::add(const std::string& s)
+    template <class T>
+    void Machine<T>::add(const std::string& s)
     {
 	now->add(s);
     }
 
-    void Machine::end_snapshot()
+    template <class T>
+    void Machine<T>::end_snapshot()
     {
 	now->put(os);
     }
@@ -71,7 +76,39 @@ namespace {
 		  const unsigned depth,
 		  const std::unordered_set<std::string>& filter)
     {
-	Machine m {os};
+	Machine<std::ostream> m {os};
+	std::string time;
+	bool in_snapshot = false;
+
+	std::string s;
+	while (in.getline(s)) {
+	    if (is_time(s)) {
+		auto v = split("=", s);
+		time = v[1];
+		if (in_snapshot) {
+		    m.end_snapshot();
+		    in_snapshot = false;
+		}
+	    }
+	    else if (is_n(s)) {
+		if (time.size()) {
+		    in_snapshot = true;
+		    m.start_snapshot(time);
+		    time = "";
+		}
+		m.add(s);
+	    }
+	}
+
+	if (in_snapshot) {
+	    m.end_snapshot();
+	}
+    }
+
+    void graph(std::ostream& os, Files& in)
+    {
+	Graph graph{os, "foo"};
+	Machine<Graph> m {graph};
 	std::string time;
 	bool in_snapshot = false;
 
@@ -121,10 +158,6 @@ namespace {
 		   << rjust(9, heap_extra) << '\n';
 	    }
 	}
-    }
-
-    void graph(std::ostream& os, Files& in)
-    {
     }
 }
 

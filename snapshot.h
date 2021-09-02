@@ -11,6 +11,8 @@
 #include <vector>
 #include <iosfwd>
 
+class Graph;
+
 /**
  * A detailed valgrind --tool=massif snapshot, which is a set of call
  * chains and, for each, the number of bytes allocated that way.
@@ -23,6 +25,7 @@ public:
     void add(const std::string& s);
 
     void put(std::ostream& os) const;
+    void put(Graph& graph) const;
 
 private:
     const std::string time;

@@ -5,6 +5,7 @@
 #include "snapshot.h"
 
 #include "split.h"
+#include "graph.h"
 
 #include <algorithm>
 #include <iostream>
@@ -71,5 +72,12 @@ void Snapshot::put(std::ostream& os) const
 {
     for (const auto& e : ee) {
 	os << time << ' ' << e.size << ' ' << e.path << '\n';
+    }
+}
+
+void Snapshot::put(Graph& graph) const
+{
+    for (const auto& e : ee) {
+	graph.add(split("/", e.path));
     }
 }
