@@ -6,6 +6,7 @@
 
 #include "split.h"
 #include "graph.h"
+#include "md5pp.h"
 
 #include <algorithm>
 #include <iostream>
@@ -47,6 +48,11 @@ namespace {
 	if (starts_with(addr, "0x")) return {begin(addr)+2, end(addr)-1};
 	return addr;
     }
+
+    md5::Digest md5sum(const std::string& s)
+    {
+	return md5::Ctx().update(s).digest();
+    }
 }
 
 void Snapshot::add(const std::string& s)
@@ -71,7 +77,10 @@ void Snapshot::add(const std::string& s)
 void Snapshot::put(std::ostream& os) const
 {
     for (const auto& e : ee) {
-	os << time << ' ' << e.size << ' ' << e.path << '\n';
+	os << time << ' '
+	   << e.size << ' '
+	   << md5sum(e.path) << ' '
+	   << e.path << '\n';
     }
 }
 
