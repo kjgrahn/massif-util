@@ -30,6 +30,7 @@ clean:
 libmassif.a: snapshot.o
 libmassif.a: split.o
 libmassif.a: files...o
+libmassif.a: rjust.o
 	$(AR) $(ARFLAGS) $@ $^
 
 example.o: CXXFLAGS+=-O0
