@@ -3,11 +3,16 @@
  *
  */
 #include "snapshot.h"
+#include "files...h"
+#include "rjust.h"
 #include "split.h"
 
 #include <iostream>
 #include <algorithm>
 #include <memory>
+#include <unordered_set>
+
+#include <getopt.h>
 
 namespace {
 
@@ -61,35 +66,142 @@ namespace {
 	if (n.front() != 'n') return false;
 	return n.back()==':';
     }
+
+    void detailed(std::ostream& os, Files& in,
+		  const unsigned depth,
+		  const std::unordered_set<std::string>& filter)
+    {
+	Machine m {os};
+	std::string time;
+	bool in_snapshot = false;
+
+	std::string s;
+	while (in.getline(s)) {
+	    if (is_time(s)) {
+		auto v = split("=", s);
+		time = v[1];
+		if (in_snapshot) {
+		    m.end_snapshot();
+		    in_snapshot = false;
+		}
+	    }
+	    else if (is_n(s)) {
+		if (time.size()) {
+		    in_snapshot = true;
+		    m.start_snapshot(time);
+		    time = "";
+		}
+		m.add(s);
+	    }
+	}
+
+	if (in_snapshot) {
+	    m.end_snapshot();
+	}
+    }
+
+    void shallow(std::ostream& os, Files& in)
+    {
+	std::string time;
+	std::string heap;
+	std::string heap_extra;
+
+	std::string s;
+	while (in.getline(s)) {
+	    const auto v = split("=", s);
+	    if (v.size() != 2) continue;
+	    auto key = v[0];
+	    auto val = v[1];
+	    if (key == "time") time = val;
+	    else if (key == "mem_heap_B") heap = val;
+	    else if (key == "mem_heap_extra_B") {
+		heap_extra = val;
+		os << rjust(12, time) << ' '
+		   << rjust(9, heap) << ' '
+		   << rjust(9, heap_extra) << '\n';
+	    }
+	}
+    }
+
+    void graph(std::ostream& os, Files& in)
+    {
+    }
 }
 
-int main()
+int main(int argc, char ** argv)
 {
-    Machine m {std::cout};
-    std::string time;
-    bool in_snapshot = false;
+    const std::string prog = argv[0] ? argv[0] : "allergyd";
+    const std::string usage = "usage: "
+	+ prog +
+	" [-d depth]"
+	" [-a address] ..."
+	" file ...\n"
+	"       " + prog +
+	" --shallow"
+	" file ...\n"
+	"       " + prog +
+	" --graph"
+	" file ...\n"
+	"       " + prog +
+	" --help\n"
+	"       " + prog +
+	" --version";
+    const char optstring[] = "d:a:";
+    struct option long_options[] = {
+	{"shallow",      0, 0, 'S'},
+	{"graph",        0, 0, 'G'},
+	{"version", 	 0, 0, 'v'},
+	{"help",    	 0, 0, 'h'},
+	{0, 0, 0, 0}
+    };
 
-    std::string s;
-    while (std::getline(std::cin, s)) {
-	if (is_time(s)) {
-	    auto v = split("=", s);
-	    time = v[1];
-	    if (in_snapshot) {
-		m.end_snapshot();
-		in_snapshot = false;
-	    }
-	}
-	else if (is_n(s)) {
-	    if (time.size()) {
-		in_snapshot = true;
-		m.start_snapshot(time);
-		time = "";
-	    }
-	    m.add(s);
+    char mode = 'D';
+    unsigned depth = 0;
+    std::unordered_set<std::string> filter;
+
+    int ch;
+    while((ch = getopt_long(argc, argv,
+			    optstring, &long_options[0], 0)) != -1) {
+	switch(ch) {
+	case 'S':
+	case 'G':
+	    mode = ch;
+	    break;
+	case 'd':
+	    depth = std::stoul(optarg);
+	    break;
+	case 'a':
+	    filter.emplace(optarg);
+	    break;
+	case 'h':
+	    std::cout << usage << '\n';
+	    return 0;
+	case 'v':
+	    std::cout << "massif_parse " << "XXX" << '\n'
+		      << "Copyright (c) 2021 J Grahn\n";
+	    return 0;
+	    break;
+	case ':':
+	case '?':
+	    std::cerr << usage << '\n';
+	    return 1;
+	    break;
+	default:
+	    break;
 	}
     }
 
-    if (in_snapshot) {
-	m.end_snapshot();
+    Files in(argv+optind, argv+argc);
+
+    if (mode=='D') {
+	detailed(std::cout, in, depth, filter);
     }
+    else if (mode=='S') {
+	shallow(std::cout, in);
+    }
+    else if (mode=='G') {
+	graph(std::cout, in);
+    }
+
+    return 0;
 }
