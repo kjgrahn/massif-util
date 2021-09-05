@@ -214,7 +214,7 @@ int main(int argc, char ** argv)
 	    std::cout << usage << '\n';
 	    return 0;
 	case 'v':
-	    std::cout << "massif_parse " << "XXX" << '\n'
+	    std::cout << "massif_parse " << "1.0" << '\n'
 		      << "Copyright (c) 2021 J Grahn\n";
 	    return 0;
 	    break;
