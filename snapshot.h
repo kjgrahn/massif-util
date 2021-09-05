@@ -8,6 +8,7 @@
 #define MASSIF_SNAPSHOT_H
 
 #include <string>
+#include <unordered_set>
 #include <vector>
 #include <iosfwd>
 
@@ -21,7 +22,8 @@ class Graph;
  */
 class Snapshot {
 public:
-    explicit Snapshot(const std::string& time);
+    Snapshot(const std::string& time,
+	     const std::unordered_set<std::string>& filter);
     void add(const std::string& s);
 
     void put(std::ostream& os) const;
@@ -29,6 +31,7 @@ public:
 
 private:
     const std::string time;
+    const std::unordered_set<std::string> filter;
     std::vector<std::string> stack;
 
     struct Entry {

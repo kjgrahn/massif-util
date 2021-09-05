@@ -12,8 +12,10 @@
 #include <algorithm>
 #include <iostream>
 
-Snapshot::Snapshot(const std::string& time)
-    : time{time}
+Snapshot::Snapshot(const std::string& time,
+		   const std::unordered_set<std::string>& filter)
+    : time{time},
+      filter{filter}
 {}
 
 namespace {
@@ -54,6 +56,20 @@ namespace {
     {
 	return md5::Ctx().update(s).digest();
     }
+
+    /**
+     * True if the filter is empty, or at least one entry is on the
+     * stack.  This is the massf_parse -a option.
+     */
+    bool matches(const std::unordered_set<std::string>& filter,
+		 const std::vector<std::string>& stack)
+    {
+	if (filter.empty()) return true;
+	for (auto& addr : stack) {
+	    if (filter.count(addr)) return true;
+	}
+	return false;
+    }
 }
 
 void Snapshot::add(const std::string& s)
@@ -70,7 +86,7 @@ void Snapshot::add(const std::string& s)
     stack.resize(level);
     stack.push_back(cleanup(addr));
 
-    if (nn=="n0:") {
+    if (nn=="n0:" && matches(filter, stack)) {
 	ee.emplace_back(sz, join('/', stack));
     }
 }

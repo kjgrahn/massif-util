@@ -25,7 +25,8 @@ namespace {
     template <class T>
     struct Machine {
 	explicit Machine(T& os) : os{os} {}
-	void start_snapshot(const std::string& time);
+	void start_snapshot(const std::string& time,
+			    const std::unordered_set<std::string>& filter);
 	void add(const std::string& s);
 	void end_snapshot();
 
@@ -34,9 +35,10 @@ namespace {
     };
 
     template <class T>
-    void Machine<T>::start_snapshot(const std::string& time)
+    void Machine<T>::start_snapshot(const std::string& time,
+				    const std::unordered_set<std::string>& filter)
     {
-	now = std::make_unique<Snapshot>(time);
+	now = std::make_unique<Snapshot>(time, filter);
     }
 
     template <class T>
@@ -93,7 +95,7 @@ namespace {
 	    else if (is_n(s)) {
 		if (time.size()) {
 		    in_snapshot = true;
-		    m.start_snapshot(time);
+		    m.start_snapshot(time, filter);
 		    time = "";
 		}
 		m.add(s);
@@ -125,7 +127,7 @@ namespace {
 	    else if (is_n(s)) {
 		if (time.size()) {
 		    in_snapshot = true;
-		    m.start_snapshot(time);
+		    m.start_snapshot(time, {});
 		    time = "";
 		}
 		m.add(s);
