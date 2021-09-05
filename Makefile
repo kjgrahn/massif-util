@@ -67,6 +67,12 @@ TAGS:
 love:
 	@echo "not war?"
 
+.PHONY: install
+install: massif_parse
+install: massif_parse.1
+	install -s -m755 massif_parse $(INSTALLBASE)/bin/
+	install -m644 massif_parse.1 $(INSTALLBASE)/man/man1/
+
 $(shell mkdir -p dep/{,test})
 DEPFLAGS=-MT $@ -MMD -MP -MF dep/$*.Td
 COMPILE.cc=$(CXX) $(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
