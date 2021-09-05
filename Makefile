@@ -48,6 +48,7 @@ massif_parse: parse.o libmassif.a
 libtest.a: test/split.o
 libtest.a: test/snapshot.o
 libtest.a: test/files.o
+libtest.a: test/md5.o
 	$(AR) $(ARFLAGS) $@ $^
 
 test/%.o: CPPFLAGS+=-I.
