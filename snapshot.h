@@ -23,7 +23,8 @@ class Graph;
 class Snapshot {
 public:
     Snapshot(const std::string& time,
-	     const std::unordered_set<std::string>& filter);
+	     unsigned depth = 0,
+	     const std::unordered_set<std::string>& filter = {});
     void add(const std::string& s);
 
     void put(std::ostream& os) const;
@@ -31,6 +32,7 @@ public:
 
 private:
     const std::string time;
+    const unsigned depth;
     const std::unordered_set<std::string> filter;
     std::vector<std::string> stack;
 

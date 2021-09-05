@@ -13,8 +13,10 @@
 #include <iostream>
 
 Snapshot::Snapshot(const std::string& time,
+		   unsigned depth,
 		   const std::unordered_set<std::string>& filter)
     : time{time},
+      depth{depth},
       filter{filter}
 {}
 
@@ -70,6 +72,17 @@ namespace {
 	}
 	return false;
     }
+
+    /**
+     * True if a call chain with size 'sz' and the nNN: text 'nn'
+     * should be collected and printed.
+     */
+    bool collectable(const std::string& nn, size_t sz, size_t depth)
+    {
+	if (depth && sz > depth) return false;
+	if (nn=="n0:") return true;
+	return sz == depth;
+    }
 }
 
 void Snapshot::add(const std::string& s)
@@ -86,7 +99,7 @@ void Snapshot::add(const std::string& s)
     stack.resize(level);
     stack.push_back(cleanup(addr));
 
-    if (nn=="n0:" && matches(filter, stack)) {
+    if (collectable(nn, stack.size(), depth) && matches(filter, stack)) {
 	ee.emplace_back(sz, join('/', stack));
     }
 }

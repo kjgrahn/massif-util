@@ -8,12 +8,12 @@ namespace snap {
 
     void empty(TC)
     {
-	Snapshot s("700", {});
+	Snapshot s("700");
     }
 
     void one(TC)
     {
-	Snapshot s("700", {});
+	Snapshot s("700");
 	s << "n1: 72707 (heap allocation functions) malloc/new/new[], --alloc-fns, etc."
 	  << " n1: 72704 0x48F0545: ???"
 	  << "  n1: 72704 0x400FFE1: call_init.part.0"
@@ -24,7 +24,7 @@ namespace snap {
 
     void two(TC)
     {
-	Snapshot s("700", {});
+	Snapshot s("700");
 	s << "n1: 72707 (heap allocation functions) malloc/new/new[], --alloc-fns, etc."
 	  << " n1: 72704 0x48F0545: ???"
 	  << "  n1: 72704 0x400FFE1: call_init.part.0"
@@ -41,7 +41,7 @@ namespace snap {
 
     void tree(TC)
     {
-	Snapshot s("3762", {});
+	Snapshot s("3762");
 	s << "n3: 187392 (heap allocation functions) malloc/new/new[], --alloc-fns, etc."
 	  << " n1: 98304 0x10AA97: __gnu_cxx::new_allocator<int>::allocate(unsigned long, void"
 	  << "  n1: 98304 0x10A80C: std::allocator_traits<std::allocator<int> >::allocate(std:"
@@ -70,7 +70,7 @@ namespace snap {
 
     void chaff(TC)
     {
-	Snapshot s("3762", {});
+	Snapshot s("3762");
 	s << "n3: 187392 (heap allocation functions) malloc/new/new[], --alloc-fns, etc."
 	  << " n1: 98304 0x10AA97: __gnu_cxx::new_allocator<int>::allocate(unsigned long, void"
 	  << "  n1: 98304 0x10A80C: std::allocator_traits<std::allocator<int> >::allocate(std:"
